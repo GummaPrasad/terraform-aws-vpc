@@ -87,3 +87,13 @@ variable "nat_gateway_tags" {
   type        = map(string)
   default     = {}
 }
+variable "is_peering_required" {
+  description = "Whether a VPC peering connection is required"
+  type        = bool
+  default     = true
+}
+variable "vpc_peering_tags" {
+  description = "The tags for the VPC peering connection"
+  type        = map(string)
+  default     = {}
+}

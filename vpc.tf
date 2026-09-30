@@ -1,8 +1,9 @@
 ### Create a VPC
 resource "aws_vpc" "main" {
-  cidr_block       = var.vpc_cidr
-  instance_tenancy = "default"
+  cidr_block           = var.vpc_cidr
+  instance_tenancy     = "default"
   enable_dns_support   = true
+  enable_dns_hostnames = true
 
   tags = merge(
     local.common_tags,
@@ -12,7 +13,7 @@ resource "aws_vpc" "main" {
       Name = "${local.common_name_suffix}-vpc"
     }
   )
-  }
+}
 
 ### Create an Internet Gateway
 resource "aws_internet_gateway" "main" {
@@ -33,7 +34,7 @@ resource "aws_subnet" "public" {
   count                   = length(var.public_subnet_cidrs)
   vpc_id                  = aws_vpc.main.id
   cidr_block              = var.public_subnet_cidrs[count.index]
-  availability_zone       = local.az_names[count.index] 
+  availability_zone       = local.az_names[count.index]
   map_public_ip_on_launch = true
 
 
@@ -49,10 +50,10 @@ resource "aws_subnet" "public" {
 
 ### Create a private subnet in each availability zone
 resource "aws_subnet" "private" {
-  count                   = length(var.private_subnet_cidrs)
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.private_subnet_cidrs[count.index]
-  availability_zone       = local.az_names[count.index]
+  count             = length(var.private_subnet_cidrs)
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.private_subnet_cidrs[count.index]
+  availability_zone = local.az_names[count.index]
 
 
   tags = merge(
@@ -67,10 +68,10 @@ resource "aws_subnet" "private" {
 
 ### Create a database subnet in each availability zone
 resource "aws_subnet" "database" {
-  count                   = length(var.database_subnet_cidrs)
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.database_subnet_cidrs[count.index]
-  availability_zone       = local.az_names[count.index]
+  count             = length(var.database_subnet_cidrs)
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.database_subnet_cidrs[count.index]
+  availability_zone = local.az_names[count.index]
 
 
   tags = merge(
@@ -133,13 +134,13 @@ resource "aws_route" "public" {
 resource "aws_eip" "nat" {
   domain = "vpc"
 
-  tags = merge (
+  tags = merge(
     var.eip_tags,
     local.common_tags,
     {
       Name = "${local.common_name_suffix}-nat-gateway-eip"
     }
-    )
+  )
 }
 ### Create a NAT Gateway in the first public subnet
 resource "aws_nat_gateway" "nat" {
